@@ -1,0 +1,13 @@
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\client\PedidoClient.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\config\OpenApiConfig.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\config\WebClientConfig.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\Controller\CocinaController.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\dto\ApiResponse.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\dto\CocinaRequestDTO.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\dto\PedidoResponseDTO.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\exception\GlobalExceptionHandler.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\exception\ResourceNotFoundException.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\Model\TicketCocina.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\MsCocinaApplication.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\Repository\TicketCocinaRepository.java
+C:\Users\Eydan\Downloads\proye\ms-cocina\src\main\java\com\example\ms_cocina\Service\CocinaService.java

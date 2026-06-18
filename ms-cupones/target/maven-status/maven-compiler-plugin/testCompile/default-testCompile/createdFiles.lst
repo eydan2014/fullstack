@@ -1,0 +1,4 @@
+com\example\ms_cupones\controller\CuponControllerTest.class
+com\example\ms_cupones\repository\CuponRepositoryTest.class
+com\example\ms_cupones\MsCuponesApplicationTests.class
+com\example\ms_cupones\service\CuponServiceTest.class
