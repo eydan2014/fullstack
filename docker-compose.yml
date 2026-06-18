@@ -1,0 +1,144 @@
+services:
+
+  mysql-pedidos:
+    image: mysql:8
+    container_name: mysql-pedidos
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pedidos_coffee
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_pedidos_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-cocina:
+    image: mysql:8
+    container_name: mysql-cocina
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cocina_coffee
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_cocina_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-cupones:
+    image: mysql:8
+    container_name: mysql-cupones
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cupones_coffee
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_cupones_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  ms-eureka:
+    build: ./ms-eureka
+    container_name: ms-eureka
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - backend-network
+
+  ms-pedidos:
+    build: ./ms-pedidos
+    container_name: ms-pedidos
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: mysql-pedidos
+      DB_PORT: 3306
+      DB_NAME: pedidos_coffee
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-pedidos
+      - ms-eureka
+    networks:
+      - backend-network
+
+  ms-cocina:
+    build: ./ms-cocina
+    container_name: ms-cocina
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      DB_HOST: mysql-cocina
+      DB_PORT: 3306
+      DB_NAME: cocina_coffee
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-cocina
+      - ms-eureka
+      - ms-pedidos
+    networks:
+      - backend-network
+
+  ms-cupones:
+    build: ./ms-cupones
+    container_name: ms-cupones
+    restart: unless-stopped
+    ports:
+      - "8089:8089"
+    environment:
+      DB_HOST: mysql-cupones
+      DB_PORT: 3306
+      DB_NAME: cupones_coffee
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-cupones
+      - ms-eureka
+    networks:
+      - backend-network
+
+  ms-gateway:
+    build: ./ms-gateway
+    container_name: ms-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - ms-eureka
+      - ms-pedidos
+      - ms-cocina
+      - ms-cupones
+    networks:
+      - backend-network
+
+volumes:
+  mysql_pedidos_data:
+  mysql_cocina_data:
+  mysql_cupones_data:
+
+networks:
+  backend-network:
+    driver: bridge
