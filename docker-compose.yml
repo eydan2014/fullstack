@@ -48,6 +48,70 @@ services:
     networks:
       - backend-network
 
+  mysql-user:
+    image: mysql:8
+    container_name: mysql-user
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ms-usuario
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_user_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-menu:
+    image: mysql:8
+    container_name: mysql-menu
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_menu
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_menu_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-pago:
+    image: mysql:8
+    container_name: mysql-pago
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_pagos
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_pago_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-fidelidad:
+    image: mysql:8
+    container_name: mysql-fidelidad
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_fidelidad
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_fidelidad_data:/var/lib/mysql
+    networks:
+      - backend-network
+
   ms-eureka:
     build: ./ms-eureka
     container_name: ms-eureka
@@ -118,6 +182,86 @@ services:
     networks:
       - backend-network
 
+  user:
+    build: ./user
+    container_name: user
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: mysql-user
+      DB_PORT: 3306
+      DB_NAME: ms-usuario
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-user
+      - ms-eureka
+    networks:
+      - backend-network
+
+  menu:
+    build: ./menu
+    container_name: menu
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      DB_HOST: mysql-menu
+      DB_PORT: 3306
+      DB_NAME: db_menu
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-menu
+      - ms-eureka
+    networks:
+      - backend-network
+
+  pago:
+    build: ./pago
+    container_name: pago
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      DB_HOST: mysql-pago
+      DB_PORT: 3306
+      DB_NAME: db_pagos
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-pago
+      - ms-eureka
+    networks:
+      - backend-network
+
+  fidelidad:
+    build: ./fidelidad
+    container_name: fidelidad
+    restart: unless-stopped
+    ports:
+      - "8087:8087"
+    environment:
+      DB_HOST: mysql-fidelidad
+      DB_PORT: 3306
+      DB_NAME: db_fidelidad
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-fidelidad
+      - ms-eureka
+    networks:
+      - backend-network
+
   ms-gateway:
     build: ./ms-gateway
     container_name: ms-gateway
@@ -131,6 +275,10 @@ services:
       - ms-pedidos
       - ms-cocina
       - ms-cupones
+      - user
+      - menu
+      - pago
+      - fidelidad
     networks:
       - backend-network
 
@@ -138,6 +286,10 @@ volumes:
   mysql_pedidos_data:
   mysql_cocina_data:
   mysql_cupones_data:
+  mysql_user_data:
+  mysql_menu_data:
+  mysql_pago_data:
+  mysql_fidelidad_data:
 
 networks:
   backend-network:
