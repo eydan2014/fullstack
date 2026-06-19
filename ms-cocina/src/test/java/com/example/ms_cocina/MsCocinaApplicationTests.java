@@ -2,6 +2,7 @@ package com.example.ms_cocina;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(properties = {
         "spring.datasource.url=jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
         "eureka.client.enabled=false",
         "spring.cloud.discovery.enabled=false"
 })
+@ActiveProfiles("test")
 class MsCocinaApplicationTests {
 
     @Test
