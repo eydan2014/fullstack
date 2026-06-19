@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "Autenticación", description = "registro, login y renovación de tokens JWT")
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class UsuarioController {
