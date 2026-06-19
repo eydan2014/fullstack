@@ -8572,3 +8572,39 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
 
+2026-06-18T23:49:49.203-04:00  INFO 17856 --- [ms-pedidos] [main] c.e.m.MsPedidosApplicationTests          : Starting MsPedidosApplicationTests using Java 21.0.10 with PID 17856 (started by Eydan in C:\Users\Eydan\Downloads\proye\ms-pedidos)
+2026-06-18T23:49:49.210-04:00  INFO 17856 --- [ms-pedidos] [main] c.e.m.MsPedidosApplicationTests          : The following 1 profile is active: "test"
+2026-06-18T23:49:54.886-04:00  INFO 17856 --- [ms-pedidos] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-18T23:49:56.391-04:00  INFO 17856 --- [ms-pedidos] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 1457 ms. Found 2 JPA repository interfaces.
+2026-06-18T23:49:57.112-04:00  INFO 17856 --- [ms-pedidos] [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=3c719764-9bbc-351b-b5e8-3d6af5c5dd6d
+2026-06-18T23:49:57.919-04:00  INFO 17856 --- [ms-pedidos] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-18T23:49:58.269-04:00  INFO 17856 --- [ms-pedidos] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-18T23:50:00.117-04:00  INFO 17856 --- [ms-pedidos] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-18T23:50:00.261-04:00  INFO 17856 --- [ms-pedidos] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-18T23:50:00.997-04:00  INFO 17856 --- [ms-pedidos] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-06-18T23:50:01.003-04:00  INFO 17856 --- [ms-pedidos] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-18T23:50:01.185-04:00  INFO 17856 --- [ms-pedidos] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: testdb/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-18T23:50:03.863-04:00  INFO 17856 --- [ms-pedidos] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-18T23:50:04.001-04:00  INFO 17856 --- [ms-pedidos] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-18T23:50:05.235-04:00  INFO 17856 --- [ms-pedidos] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-18T23:50:06.127-04:00  WARN 17856 --- [ms-pedidos] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-18T23:50:08.830-04:00  INFO 17856 --- [ms-pedidos] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2026-06-18T23:50:08.859-04:00  INFO 17856 --- [ms-pedidos] [main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestClient.
+2026-06-18T23:50:08.973-04:00  WARN 17856 --- [ms-pedidos] [main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-06-18T23:50:09.047-04:00  INFO 17856 --- [ms-pedidos] [main] c.e.m.MsPedidosApplicationTests          : Started MsPedidosApplicationTests in 21.899 seconds (process running for 29.133)
+2026-06-18T23:50:09.056-04:00  WARN 17856 --- [ms-pedidos] [main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-06-18T23:50:09.057-04:00  WARN 17856 --- [ms-pedidos] [main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-06-18T23:50:10.490-04:00  INFO 17856 --- [ms-pedidos] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-18T23:50:10.512-04:00  INFO 17856 --- [ms-pedidos] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-18T23:50:10.520-04:00  INFO 17856 --- [ms-pedidos] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

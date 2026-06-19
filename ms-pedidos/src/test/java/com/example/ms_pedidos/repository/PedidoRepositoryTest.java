@@ -3,6 +3,7 @@ package com.example.ms_pedidos.repository;
 import com.example.ms_pedidos.model.Pedido;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
         "spring.jpa.hibernate.ddl-auto=create-drop",
         "spring.flyway.enabled=false"
 })
+@ActiveProfiles("test")
 class PedidoRepositoryTest {
 
     @Autowired
