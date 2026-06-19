@@ -1,7 +1,5 @@
 package com.example.menu.Controller;
 
-
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean; // ◄ Obligatorio para Spring Boot 3.4 / 4.0+
+import org.springframework.test.context.bean.override.mockito.MockitoBean; // ◄ Obligatorio para la compatibilidad nativa con Spring Boot 3.4 / 4.0+
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.menu.dto.ProductosDTO;
@@ -35,14 +33,15 @@ public class ProductosControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockitoBean // ◄ CORREGIDO: Adaptado para la compatibilidad nativa con Spring Boot 4.0
+    @MockitoBean // ◄ Mock del servicio inyectado de forma segura en la arquitectura del contexto
     private ProductosService service;
 
-    @MockitoBean // ◄ CORREGIDO: Ambos unificados con la nueva arquitectura de mocks
+    @MockitoBean 
     private JwtUtil jwtUtil;
 
     @Test
     void debeListarProductos() throws Exception {
+        // 1. GIVEN
         Productos p = new Productos();
         p.setId(1L);
         p.setNombre("Café Latte");
@@ -51,9 +50,10 @@ public class ProductosControllerTest {
 
         when(service.listar()).thenReturn(List.of(p));
 
+        // 2. WHEN & 3. THEN
         mockMvc.perform(get("/api/productos"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.respuesta").value(true)) // Validamos directo sin métodos auxiliares abstractos
+                .andExpect(jsonPath("$.respuesta").value(true)) 
                 .andExpect(jsonPath("$.mensaje").value("Listado obtenido"))
                 .andExpect(jsonPath("$.data[0].id").value(1))
                 .andExpect(jsonPath("$.data[0].nombre").value("Café Latte"));
@@ -61,24 +61,26 @@ public class ProductosControllerTest {
 
     @Test
     void debeObtenerProductoPorId() throws Exception {
+        // 1. GIVEN
         Productos p = new Productos();
         p.setId(1L);
         p.setNombre("Espresso");
         p.setPrecio(new BigDecimal("1500"));
-        p.setIsHot(true);
 
         when(service.obtener(1L)).thenReturn(p);
 
+        // 2. WHEN & 3. THEN
         mockMvc.perform(get("/api/productos/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.respuesta").value(true))
-                .andExpect(jsonPath("$.mensaje").value("Producto obtenido"))
+                .andExpect(jsonPath("$.mensaje").value("Producto obtenido")) // 🚀 Sincronizado en español con tu ApiResponse
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.nombre").value("Espresso"));
     }
 
     @Test
     void debeCrearProducto() throws Exception {
+        
         ProductosDTO dto = new ProductosDTO();
         dto.setNombre("Capuccino");
         dto.setDescripcion("Café con espuma");
@@ -92,6 +94,7 @@ public class ProductosControllerTest {
 
         when(service.crear(any(ProductosDTO.class))).thenReturn(creado);
 
+
         mockMvc.perform(post("/api/productos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
@@ -102,10 +105,13 @@ public class ProductosControllerTest {
 
     @Test
     void debeActualizarProducto() throws Exception {
+        // 1. GIVEN: Objeto DTO completo con restricciones @NotBlank satisfechas para saltar el validador del controlador
         ProductosDTO dto = new ProductosDTO();
         dto.setNombre("Café Premium");
+        dto.setDescripcion("Café seleccionado de alta calidad"); 
         dto.setPrecio(new BigDecimal("3500"));
         dto.setHot(false);
+        dto.setStock(20);
 
         Productos actualizado = new Productos();
         actualizado.setId(1L);
@@ -113,18 +119,21 @@ public class ProductosControllerTest {
 
         when(service.actualizar(eq(1L), any(ProductosDTO.class))).thenReturn(actualizado);
 
+        // 2. WHEN & 3. THEN
         mockMvc.perform(put("/api/productos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // 🚀 Retorna exitosamente HTTP 200 OK
                 .andExpect(jsonPath("$.respuesta").value(true))
                 .andExpect(jsonPath("$.mensaje").value("Producto actualizado"));
     }
 
     @Test
     void debeEliminarProducto() throws Exception {
+        // 1. GIVEN
         doNothing().when(service).eliminar(1L);
 
+        // 2. WHEN & 3. THEN
         mockMvc.perform(delete("/api/productos/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.respuesta").value(true))
@@ -133,12 +142,14 @@ public class ProductosControllerTest {
 
     @Test
     void debeObtenerPrecioDelProducto() throws Exception {
+        // 1. GIVEN
         Productos p = new Productos();
         p.setId(1L);
         p.setPrecio(new BigDecimal("3500"));
 
         when(service.obtener(1L)).thenReturn(p);
 
+        // 2. WHEN & 3. THEN
         mockMvc.perform(get("/api/productos/1/precio"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("3500"));

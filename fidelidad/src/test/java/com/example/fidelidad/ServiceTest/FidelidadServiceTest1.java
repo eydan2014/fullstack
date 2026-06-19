@@ -1,6 +1,7 @@
 package com.example.fidelidad.ServiceTest;
 
 
+
 import com.example.fidelidad.model.Fidelidad;
 import com.example.fidelidad.repository.FidelidadRepository;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-class FidelidadRepositoryTest {
+class FidelidadRepositoryTest1 {
 
     @Autowired
     private FidelidadRepository repository;
