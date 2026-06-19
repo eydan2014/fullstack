@@ -51,7 +51,6 @@ Tecnologías utilizadas
 - Maven
 - JUnit
 - Mockito
-- JaCoCo
 - GitHub
 
 ---
