@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS db_pagos;
+USE db_pagos;
+
+CREATE TABLE pagos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id VARCHAR(100) NOT NULL, -- Extraído del JWT
+    producto_id BIGINT NOT NULL,
+    cantidad INT NOT NULL,
+    monto_total DECIMAL(10, 2) NOT NULL,
+    metodo_pago VARCHAR(50), -- EJ: TARJETA, TRANSFERENCIA
+    estado VARCHAR(20) DEFAULT 'COMPLETADO',
+    fecha_pago TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+insert into pagos (usuario_id, producto_id, cantidad, monto_total, metodo_pago) values
+('user123', 1, 2, 19.98, 'TARJETA'),
+('user456', 3, 1, 12.99, 'TRANSFERENCIA'),
+('user789', 2, 3, 23.97, 'TARJETA'),
+('user123', 5, 5, 14.95, 'TRANSFERENCIA'),
+('user456', 4, 1, 4.99, 'TARJETA');
