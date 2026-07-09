@@ -6,7 +6,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-// 🚀 Todos los imports apuntan correctamente a la estructura interna de la carpeta 'user'
 import com.example.user.repository.RefreshTokenRepository;
 import com.example.user.repository.UsuarioRepository;
 import com.example.user.security.JwtUtil;
@@ -94,5 +93,10 @@ public class UsuarioService {
 
         refreshTokenRepo.save(rt);
         return tokenFirmado;
+    }
+
+    public boolean existeUsuario(String username) {
+        log.info("[INTER-SERVICIO] Validando existencia remota del usuario: {}", username);
+        return usuarioRepo.existsByUsername(username);
     }
 }

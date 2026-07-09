@@ -45,7 +45,7 @@ public class PagoController {
         String usuarioReal = jwtUtil.obtenerUsuario(token.replace("Bearer ", ""));    
         log.info("[TRAZABILIDAD] Solicitud de pago recibida de Usuario: {} para Producto ID: {}",
                  usuarioReal, req.getProductoId()); 
-        
+        //productos
         String urlProducto = "http://localhost:8083/api/productos/" + req.getProductoId() + "/precio";
         log.info("[INTER-SERVICIO] Consultando precio remoto al microservicio de Productos mediante RestTemplate...");  
         BigDecimal precioReal = restTemplate.getForObject(urlProducto, BigDecimal.class);
@@ -64,7 +64,7 @@ public class PagoController {
             log.error("[INTER-SERVICIO] Error al notificar al microservicio de Fidelidad: {}", e.getMessage());
         }
 
-        // AVISO (Asegúrate de que el puerto de tu ms-aviso sea el 8088 o cámbialo aquí)
+        // AVISO 
         String urlAviso = "http://localhost:8088/api/avisos/enviar";
         Map<String, Object> avisoRequest = new HashMap<>();
         avisoRequest.put("usuario", usuarioReal);
@@ -99,7 +99,7 @@ public class PagoController {
     ) {
         log.info("[CONTROLLER] Solicitando comprobante de pago para ID: {}", id);
         
-        // 🚀 Llama exactamente al método implementado en el servicio
+        
         pago p = pagoService.obtenerPagoPorId(id);
         
         EntityModel<pago> recurso = EntityModel.of(p);
