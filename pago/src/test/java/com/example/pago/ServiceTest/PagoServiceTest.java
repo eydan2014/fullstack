@@ -40,22 +40,20 @@ public class PagoServiceTest {
         String usuarioId = "user-123";
         BigDecimal precioUnitario = new BigDecimal("2500");
         
-        // El monto esperado es: 2500 * 3 = 7500
 
         BigDecimal montoTotalEsperado = new BigDecimal("7500");
 
-        // Configuración del Mock para interceptar el guardado y simular el comportamiento de la BD
-        
+                
         when(pagoRepo.save(any(pago.class))).thenAnswer(invocation -> {
             pago pagoGuardado = invocation.getArgument(0);
-            pagoGuardado.setId(1L); // Simulamos que la BD le asigna un ID autoincremental
+            pagoGuardado.setId(1L); 
             return pagoGuardado;
         });
 
-        // 2. WHEN (Ejecución del método a probar)
+        
         pago resultado = service.procesopagar(request, usuarioId, precioUnitario);
 
-        // 3. THEN (Verificaciones de resultados y aserciones)
+      
         assertNotNull(resultado, "El objeto de pago retornado no debería ser nulo");
         assertEquals(1L, resultado.getId(), "El ID debería haber sido asignado por el repositorio mock");
         assertEquals("user-123", resultado.getUsuarioId());
@@ -64,7 +62,7 @@ public class PagoServiceTest {
         assertEquals("WEBPAY", resultado.getMetodoPago());
         assertEquals(montoTotalEsperado, resultado.getMontoTotal(), "El cálculo del monto total (precio * cantidad) es incorrecto");
 
-        // Verificamos que efectivamente se llamó al método .save() del repositorio una única vez
+       
         verify(pagoRepo).save(any(pago.class));
     }
 }

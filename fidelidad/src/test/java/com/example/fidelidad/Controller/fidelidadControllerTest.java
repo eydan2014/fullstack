@@ -14,11 +14,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.example.fidelidad.controller.FidelidadController;
 import com.example.fidelidad.dto.FidelidadRequestDTO;
+import com.example.fidelidad.model.Fidelidad;
 import com.example.fidelidad.service.FidelidadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -67,6 +70,13 @@ public class fidelidadControllerTest {
     @Test
     void debeObtenerBalanceConHateoasAlternativo() throws Exception {
         Long idUsuario = 99L;
+
+        // 1. GIVEN: stub que faltaba - sin esto Mockito devuelve null y EntityModel.of() explota
+        Fidelidad fidelidadExistente = new Fidelidad();
+        fidelidadExistente.setId(1L);
+        fidelidadExistente.setUsuario(String.valueOf(idUsuario));
+        fidelidadExistente.setPuntosTotales(500);
+        when(fidelidadService.obtenerPuntos(anyString())).thenReturn(fidelidadExistente);
 
         // 2. WHEN & 3. THEN
         // 🚀 CORREGIDO: Evaluamos directamente la respuesta con jsonPath evitando el crash estructural del HAL wrapper

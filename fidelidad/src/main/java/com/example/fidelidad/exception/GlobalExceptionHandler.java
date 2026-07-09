@@ -1,30 +1,35 @@
 package com.example.fidelidad.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.security.access.AccessDeniedException; 
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 🔴 400 - VALIDACIÓN
+    // VALIDACIONES
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleValidation(
+            MethodArgumentNotValidException ex
+    ) {
+
         Map<String, String> errores = new HashMap<>();
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errores.put(error.getField(), error.getDefaultMessage());
-        }
+
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error ->
+                        errores.put(
+                                error.getField(),
+                                error.getDefaultMessage()
+                        )
+                );
 
         return ResponseEntity.badRequest().body(
-                ApiResponse.<Object>builder() 
+                ApiResponse.builder()
                         .success(false)
                         .message("Validación fallida")
                         .error(errores)
@@ -32,46 +37,32 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 🔐 403 - ACCESO DENEGADO
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Object>> handle403(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                ApiResponse.<Object>builder() 
-                        .success(false)
-                        .message("Acceso denegado")
-                        .build()
-        );
-    }
+    // 404
 
-    // 🔎 401 - CREDENCIALES INVÁLIDAS
-    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBadCredentials(org.springframework.security.authentication.BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ApiResponse.<Object>builder() 
-                        .success(false)
-                        .message("Credenciales inválidas")
-                        .build()
-        );
-    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<Object>> handleNotFound(
+            RuntimeException ex
+    ) {
 
-    // 🔎 404 - RECURSO NO ENCONTRADO (CORREGIDO: Ya no es genérico para todo Runtime)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse<Object>> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ApiResponse.<Object>builder() 
+        return ResponseEntity.status(404).body(
+                ApiResponse.builder()
                         .success(false)
                         .message(ex.getMessage())
                         .build()
         );
     }
 
-    // 💥 500 - ERROR GENERAL INTERNO
+    // 500
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneral(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ApiResponse.<Object>builder() // ◄ CORREGIDO: Diamante genérico asignado
+    public ResponseEntity<ApiResponse<Object>> handleGeneral(
+            Exception ex
+    ) {
+
+        return ResponseEntity.status(500).body(
+                ApiResponse.builder()
                         .success(false)
-                        .message("Error interno controlado del servidor")
+                        .message(ex.getMessage())
                         .build()
         );
     }

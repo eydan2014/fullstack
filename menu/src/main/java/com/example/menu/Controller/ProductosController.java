@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Productos", description = "Controlador para la gestión del catálogo de café (Bebidas frías/calientes)")
+@Tag(name = "Productos", description = "Controlador para la gestion del catalogo de cafe (Bebidas frias/calientes)")
 @RestController
 @RequestMapping("/api/productos")
 @RequiredArgsConstructor
@@ -36,7 +36,8 @@ public class ProductosController {
 
     private final ProductosService service;
 
-    @Operation(summary = "Crear un nuevo producto", description = "Permite registrar un nuevo ítem en el catálogo de cafetería. Requiere rol ADMIN.")
+    @Operation(summary = "Crear un nuevo producto", description = 
+    "Permite registrar un nuevo item en el catalogo de cafeteria. Requiere rol ADMIN.")
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<Productos>> crear(@Valid @RequestBody ProductosDTO dto) {
@@ -49,7 +50,7 @@ public class ProductosController {
                         .build()
         );
     }
-    @Operation(summary = "Listar productos", description = "Obtiene la lista de todos los productos en el catálogo.")
+    @Operation(summary = "Listar productos", description = "Obtiene la lista de todos los productos en el catalogo.")
     @GetMapping
     public ResponseEntity<ApiResponse<List<Productos>>> listar() {
         return ResponseEntity.ok(
@@ -61,7 +62,8 @@ public class ProductosController {
         );
     }
 
-    @Operation(summary = "Obtener un producto por ID", description = "Retorna los detalles de un producto específico según su ID.")
+    @Operation(summary = "Obtener un producto por ID", description = 
+    "Retorna los detalles de un producto especifico segun su ID.")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<EntityModel<Productos>>> obtener(@PathVariable Long id) {
         Productos p = service.obtener(id);
@@ -111,4 +113,17 @@ public class ProductosController {
         Productos p = service.obtener(id);
         return p.getPrecio();
     }
+@Operation(summary = "Verificar si un producto existe", description =
+ "Endpoint inter-servicio utilizado por otros modulos para comprobar la validez de un ID.")
+    @GetMapping("/{id}/existe")
+    public boolean existeProducto(@PathVariable Long id) {
+        log.info("[INTER-SERVICIO] Recibida validación remota de existencia para Producto ID: {}", id);
+        try {
+            service.obtener(id);
+            return true;
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return false;
+        }
+    }
+
 }

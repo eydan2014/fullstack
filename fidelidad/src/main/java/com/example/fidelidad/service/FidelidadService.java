@@ -38,4 +38,10 @@ public class FidelidadService {
           usuario, fidelidad.getPuntosTotales());
 
         }
+
+    // Consulta el balance real de puntos de un usuario
+    public Fidelidad obtenerPuntos(String usuario) {
+        return fidelidadRepo.findByUsuario(usuario)
+            .orElseThrow(() -> new RuntimeException("No existe registro de fidelidad para el usuario: " + usuario));
+    }
 }

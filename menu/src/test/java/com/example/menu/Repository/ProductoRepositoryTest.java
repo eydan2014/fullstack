@@ -1,13 +1,10 @@
 package com.example.menu.Repository;
 
 
-
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-
 import com.example.menu.model.Productos;
 import com.example.menu.repository.ProductoRepository;
 
@@ -26,14 +23,14 @@ class ProductoRepositoryTest {
 
     @Test
     void debeGuardarProducto() {
-        Productos producto = new Productos();
-        producto.setNombre("Gabriel García Márquez Coffee");
-        producto.setDescripcion("Mezcla colombiana premium");
-        producto.setPrecio(new BigDecimal("2990"));
-        producto.setStock(50);
-        producto.setIsHot(true);
+        Productos producto1 = new Productos();
+        producto1.setNombre("Gabriel García Márquez Coffee");
+        producto1.setDescripcion("Mezcla colombiana premium");
+        producto1.setPrecio(new BigDecimal("2990"));
+        producto1.setStock(50);
+        producto1.setIsHot(true);
 
-        Productos guardado = repository.save(producto);
+        Productos guardado = repository.save(producto1);
 
         assertNotNull(guardado.getId());
         assertEquals("Gabriel García Márquez Coffee", guardado.getNombre());

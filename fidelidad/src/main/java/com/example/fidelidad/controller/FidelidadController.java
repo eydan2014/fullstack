@@ -1,18 +1,23 @@
 package com.example.fidelidad.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.fidelidad.dto.FidelidadRequestDTO;
 import com.example.fidelidad.exception.ApiResponse;
+import com.example.fidelidad.model.Fidelidad;
 import com.example.fidelidad.service.FidelidadService;
+
 
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
 import org.springframework.hateoas.EntityModel;
+import org.springframework.validation.annotation.Validated;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import lombok.RequiredArgsConstructor;
@@ -23,13 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/fidelidad")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class FidelidadController {
 
     private final FidelidadService fidelidadService;
 
     @Operation(summary = "Acreditar puntos de compra", description = "Recibe el monto de una compra y calcula los puntos acumulados para el cliente.")
     @PostMapping("/acreditar")
-    public ResponseEntity<ApiResponse<Void>> acreditarPuntos(@RequestBody FidelidadRequestDTO req) {
+    public ResponseEntity<ApiResponse<Void>> acreditarPuntos(@Valid @RequestBody FidelidadRequestDTO req) {
         log.info("[Controler] Peticion remota para acreditar puntos. usuarios:{}, Monto de compra: ${}",
                 req.getUsuario(), req.getMonto());
         fidelidadService.agregarPuntos(req.getUsuario(), req.getMonto());
@@ -48,21 +54,20 @@ public class FidelidadController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Consulta realizada de forma exitosa"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "El usuario no posee un registro de puntos activo")
     })
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<ApiResponse<EntityModel<FidelidadRequestDTO>>> obtener(@PathVariable Long id) {
-        log.info("[CONTROLLER] Consultando balance de puntos de forma individual para ID: {}", id);
-        
-    
-        FidelidadRequestDTO mockData = new FidelidadRequestDTO();
-        mockData.setUsuario(id.toString());
-            EntityModel<FidelidadRequestDTO> recurso = EntityModel.of(mockData);
-        
-              recurso.add(linkTo(methodOn(FidelidadController.class).obtener(id)).withSelfRel()); 
+    @GetMapping("/{usuario}") 
+    public ResponseEntity<ApiResponse<EntityModel<Fidelidad>>> obtener(@PathVariable String usuario) { // ◄ Cambiado de Long id a String usuario
+        log.info("[CONTROLLER] Consultando balance de puntos de forma individual para el usuario: {}", usuario);
+
+        // 🚀 CORREGIDO: consultamos el balance real en la base de datos en vez de datos inventados
+        Fidelidad fidelidad = fidelidadService.obtenerPuntos(usuario);
+
+        EntityModel<Fidelidad> recurso = EntityModel.of(fidelidad);
+  
+        recurso.add(linkTo(methodOn(FidelidadController.class).obtener(usuario)).withSelfRel()); 
         recurso.add(linkTo(methodOn(FidelidadController.class).acreditarPuntos(null)).withRel("update")); 
         
         return ResponseEntity.ok(
-                ApiResponse.<EntityModel<FidelidadRequestDTO>>builder()
+                ApiResponse.<EntityModel<Fidelidad>>builder()
                         .success(true)
                         .message("Balance obtenido con navegación hipermedia")
                         .data(recurso) 

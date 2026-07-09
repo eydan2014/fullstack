@@ -4,7 +4,8 @@ import com.example.pago.model.pago;
 import com.example.pago.repository.PagoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class PagoRepositoryTest {
 
@@ -48,7 +50,7 @@ class PagoRepositoryTest {
         nuevoPago.setCantidad(1);
         nuevoPago.setMetodoPago("EFECTIVO");
         nuevoPago.setMontoTotal(new BigDecimal("2500"));
-        
+
         pago guardado = repository.save(nuevoPago);
 
         // 2. WHEN
@@ -93,7 +95,7 @@ class PagoRepositoryTest {
         // 3. THEN: Comprobamos que solo traiga los del usuario consultado
         assertNotNull(pagosUsuario);
         assertEquals(2, pagosUsuario.size(), "Debería retornar exactamente los 2 pagos del usuario-frecuente");
-        
+
         // Verificamos que todos los elementos pertenezcan de verdad a ese usuario
         assertTrue(pagosUsuario.stream().allMatch(p -> p.getUsuarioId().equals("usuario-frecuente")));
     }

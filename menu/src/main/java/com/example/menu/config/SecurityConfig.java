@@ -41,6 +41,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 🔓 Permitimos la consulta rápida de precios para que el módulo de Pagos no rebote
                 .requestMatchers("/api/productos/*/precio").permitAll()
+                // 🔓 Permitimos verificar existencia de producto para que el módulo de Reseñas no rebote
+                .requestMatchers("/api/productos/*/existe").permitAll()
                 // 🔐 El resto de la API requiere token
                 .anyRequest().authenticated()
             )

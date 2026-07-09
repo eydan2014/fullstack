@@ -133,7 +133,14 @@ public class PagoControllerTest {
 
      @Test
      void debeObtenerComprobanteConHateoas() throws Exception {
-        // 1. GIVEN & WHEN & 3. THEN
+        // 1. GIVEN: stub que faltaba - sin esto Mockito devuelve null y EntityModel.of() explota
+        pago pagoExistente = new pago();
+        pagoExistente.setId(1L);
+        pagoExistente.setUsuarioId("user-test");
+        pagoExistente.setMontoTotal(new BigDecimal("5000"));
+        when(pagoService.obtenerPagoPorId(1L)).thenReturn(pagoExistente);
+
+        // 2. WHEN & 3. THEN
         mockMvc.perform(get("/api/pagos/1") // 🚀 CORREGIDO: Usamos la ruta real del controlador para eliminar el 404
                         .header("Authorization", tokenSimulado))
                 .andExpect(status().isOk()) // 🚀 Ahora sí devolverá 200 OK
