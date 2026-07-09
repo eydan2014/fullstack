@@ -112,6 +112,54 @@ services:
     networks:
       - backend-network
 
+  mysql-inventario:
+    image: mysql:8
+    container_name: mysql-inventario
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_inventario
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3314:3306"
+    volumes:
+      - mysql_inventario_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-resena:
+    image: mysql:8
+    container_name: mysql-resena
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_resena
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3315:3306"
+    volumes:
+      - mysql_resena_data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  mysql-aviso:
+    image: mysql:8
+    container_name: mysql-aviso
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_aviso
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_aviso_data:/var/lib/mysql
+    networks:
+      - backend-network
+
   ms-eureka:
     build: ./ms-eureka
     container_name: ms-eureka
@@ -262,6 +310,67 @@ services:
     networks:
       - backend-network
 
+  inventario:
+    build: ./inventario
+    container_name: inventario
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      DB_HOST: mysql-inventario
+      DB_PORT: 3306
+      DB_NAME: db_inventario
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-inventario
+      - ms-eureka
+    networks:
+      - backend-network
+
+  resena:
+    build: ./resena
+    container_name: resena
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      DB_HOST: mysql-resena
+      DB_PORT: 3306
+      DB_NAME: db_resena
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-resena
+      - ms-eureka
+      - menu
+    networks:
+      - backend-network
+
+  aviso:
+    build: ./aviso
+    container_name: aviso
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      DB_HOST: mysql-aviso
+      DB_PORT: 3306
+      DB_NAME: db_aviso
+      DB_USER: appuser
+      DB_PASSWORD: 1234
+      JWT_SECRET: mysecreto98765432112345698778912
+      EUREKA_URL: http://ms-eureka:8761/eureka/
+    depends_on:
+      - mysql-aviso
+      - ms-eureka
+    networks:
+      - backend-network
+
   ms-gateway:
     build: ./ms-gateway
     container_name: ms-gateway
@@ -279,6 +388,9 @@ services:
       - menu
       - pago
       - fidelidad
+      - inventario
+      - resena
+      - aviso
     networks:
       - backend-network
 
@@ -290,6 +402,9 @@ volumes:
   mysql_menu_data:
   mysql_pago_data:
   mysql_fidelidad_data:
+  mysql_inventario_data:
+  mysql_resena_data:
+  mysql_aviso_data:
 
 networks:
   backend-network:
