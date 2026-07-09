@@ -27,4 +27,8 @@ public class PagoService {
         return pagoRepo.save(nuevoPago);
 
 }
+     public pago obtenerPagoPorId(Long id) {
+        return pagoRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Pago no encontrado con ID: " + id));
+     }
 }

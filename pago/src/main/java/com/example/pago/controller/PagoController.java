@@ -16,7 +16,6 @@ import com.example.pago.model.pago;
 import com.example.pago.security.JwtUtil;
 import com.example.pago.service.PagoService;
 
-// 🚀 IMPORTS REQUERIDOS PARA SWAGGER AVANZADO Y HATEOAS
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,13 +36,12 @@ public class PagoController {
     private final RestTemplate restTemplate; 
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "Procesar un nuevo pago", description = "Valida el precio remoto del producto, ejecuta la transacción y notifica al servicio de fidelidad.")
+    @Operation(summary = "Procesar un nuevo pago", description = "Valida el precio remoto del producto, ejecuta la transacción, y notifica a fidelidad y avisos.")
     @PostMapping("/realizar_pago")
     public ResponseEntity<ApiResponse<pago>> pagar(
         @RequestBody PagoRequest req, 
         @RequestHeader("Authorization") String token
     ) {
-        // 1. Obtener el usuario
         String usuarioReal = jwtUtil.obtenerUsuario(token.replace("Bearer ", ""));    
         log.info("[TRAZABILIDAD] Solicitud de pago recibida de Usuario: {} para Producto ID: {}",
                  usuarioReal, req.getProductoId()); 
@@ -54,6 +52,7 @@ public class PagoController {
 
         pago nuevoPago = pagoService.procesopagar(req, usuarioReal, precioReal);
 
+        // FIDELIDAD
         String urlFidelidad = "http://localhost:8087/fidelidad/acreditar";
         Map<String, Object> fidelidadRequest = new HashMap<>();
         fidelidadRequest.put("usuario", usuarioReal);
@@ -65,6 +64,19 @@ public class PagoController {
             log.error("[INTER-SERVICIO] Error al notificar al microservicio de Fidelidad: {}", e.getMessage());
         }
 
+        // AVISO (Asegúrate de que el puerto de tu ms-aviso sea el 8088 o cámbialo aquí)
+        String urlAviso = "http://localhost:8088/api/avisos/enviar";
+        Map<String, Object> avisoRequest = new HashMap<>();
+        avisoRequest.put("usuario", usuarioReal);
+        avisoRequest.put("mensaje", "Compra exitosa del producto ID: " + req.getProductoId() + " por un total de $" + nuevoPago.getMontoTotal());
+        avisoRequest.put("tipo", "PAGO");
+        try {
+            restTemplate.postForEntity(urlAviso, avisoRequest, Void.class);
+            log.info("[INTER-SERVICIO] Notificación enviada exitosamente al microservicio de Avisos.");
+        } catch (Exception e) {
+            log.error("[INTER-SERVICIO] Error al notificar al microservicio de Avisos: {}", e.getMessage());
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ApiResponse.<pago>builder()
             .success(true)
@@ -73,7 +85,6 @@ public class PagoController {
             .build());
     }
 
-    // 🚀 EXTRAPOLADO DE LA GUÍA: Consulta individual de transacciones enriquecida con HATEOAS
     @Operation(summary = "Obtener comprobante de pago por ID", description = "Busca los detalles históricos de una transacción y genera un mapa de navegación hipermedia.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Transacción encontrada y procesada con HATEOAS"),
@@ -88,16 +99,13 @@ public class PagoController {
     ) {
         log.info("[CONTROLLER] Solicitando comprobante de pago para ID: {}", id);
         
-        pago p = new pago();
-        p.setProductoId(1L); 
-        
+        // 🚀 Llama exactamente al método implementado en el servicio
+        pago p = pagoService.obtenerPagoPorId(id);
         
         EntityModel<pago> recurso = EntityModel.of(p);
         
-        
         recurso.add(linkTo(methodOn(PagoController.class).obtener(id, token)).withSelfRel()); 
-        recurso.add(linkTo(methodOn(PagoController.class).pagar(null, token)).withRel("realizar_pago")); 
-        
+        recurso.add(linkTo(methodOn(PagoController.class).pagar(new PagoRequest(), token)).withRel("realizar_pago")); 
 
         return ResponseEntity.ok(
                 ApiResponse.<EntityModel<pago>>builder()

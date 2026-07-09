@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS resenas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_producto BIGINT NOT NULL,
+    usuario VARCHAR(255) NOT NULL,
+    calificacion INT NOT NULL,
+    comentario VARCHAR(500),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
