@@ -55,10 +55,10 @@ public class FidelidadController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "El usuario no posee un registro de puntos activo")
     })
     @GetMapping("/{usuario}") 
-    public ResponseEntity<ApiResponse<EntityModel<Fidelidad>>> obtener(@PathVariable String usuario) { // ◄ Cambiado de Long id a String usuario
+    public ResponseEntity<ApiResponse<EntityModel<Fidelidad>>> obtener(@PathVariable String usuario) { 
         log.info("[CONTROLLER] Consultando balance de puntos de forma individual para el usuario: {}", usuario);
 
-        // 🚀 CORREGIDO: consultamos el balance real en la base de datos en vez de datos inventados
+        
         Fidelidad fidelidad = fidelidadService.obtenerPuntos(usuario);
 
         EntityModel<Fidelidad> recurso = EntityModel.of(fidelidad);
