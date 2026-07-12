@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.example.ms_pedidos.client.CuponClient;
+import com.example.ms_pedidos.client.MenuClient;
+import com.example.ms_pedidos.client.UserClient;
 import com.example.ms_pedidos.dto.AplicarCuponResponseDTO;
 
 import java.math.BigDecimal;
@@ -24,6 +26,8 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final DetallePedidoRepository detallePedidoRepository;
     private final CuponClient cuponClient;
+    private final UserClient userClient;
+    private final MenuClient menuClient;
 
     public List<Pedido> listarPedidos() {
 
@@ -44,6 +48,20 @@ public class PedidoService {
     public Pedido crearPedido(PedidoRequestDTO dto) {
 
     log.info("Creando pedido para usuario {}", dto.getUsuarioId());
+
+    // 🔗 INTER-SERVICIO: validamos que el usuario exista en 'user' antes de crear el pedido
+    if (!userClient.existeUsuario(dto.getUsuarioId())) {
+        log.error("Validación fallida: el usuario {} no existe.", dto.getUsuarioId());
+        throw new ResourceNotFoundException("El usuario " + dto.getUsuarioId() + " no existe");
+    }
+
+    // 🔗 INTER-SERVICIO: validamos que cada producto del detalle exista en 'menu'
+    for (PedidoRequestDTO.DetalleDTO detalleDTO : dto.getDetalles()) {
+        if (!menuClient.existeProducto(detalleDTO.getProductoId())) {
+            log.error("Validación fallida: el producto {} no existe.", detalleDTO.getProductoId());
+            throw new ResourceNotFoundException("El producto " + detalleDTO.getProductoId() + " no existe en el catálogo");
+        }
+    }
 
     Pedido pedido = new Pedido();
 

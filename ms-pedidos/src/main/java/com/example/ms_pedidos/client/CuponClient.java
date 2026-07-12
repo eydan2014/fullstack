@@ -20,7 +20,10 @@ public class CuponClient {
 
     private final WebClient webClient;
 
-    private static final String CUPONES_URL = "http://localhost:8089/api/cupones/aplicar";
+    // 🔗 Nombre lógico registrado en Eureka (spring.application.name de ms-cupones).
+    // El WebClient está construido desde un Builder @LoadBalanced, así que resuelve
+    // este nombre automáticamente a la instancia real (funciona igual en local y en Docker).
+    private static final String CUPONES_URL = "http://ms-cupones/api/cupones/aplicar";
 
     public AplicarCuponResponseDTO aplicarCupon(String codigo, BigDecimal montoPedido) {
 

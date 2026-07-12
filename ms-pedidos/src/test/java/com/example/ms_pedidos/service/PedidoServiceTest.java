@@ -1,6 +1,8 @@
 package com.example.ms_pedidos.service;
 
 import com.example.ms_pedidos.client.CuponClient;
+import com.example.ms_pedidos.client.MenuClient;
+import com.example.ms_pedidos.client.UserClient;
 import com.example.ms_pedidos.dto.AplicarCuponResponseDTO;
 import com.example.ms_pedidos.dto.PedidoRequestDTO;
 import com.example.ms_pedidos.exception.ResourceNotFoundException;
@@ -9,6 +11,7 @@ import com.example.ms_pedidos.model.Pedido;
 import com.example.ms_pedidos.repository.DetallePedidoRepository;
 import com.example.ms_pedidos.repository.PedidoRepository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -39,8 +42,22 @@ class PedidoServiceTest {
     @Mock
     private CuponClient cuponClient;
 
+    @Mock
+    private UserClient userClient;
+
+    @Mock
+    private MenuClient menuClient;
+
     @InjectMocks
     private PedidoService pedidoService;
+
+    @BeforeEach
+    void setUp() {
+        // Por defecto, usuario y productos existen: la mayoría de los tests
+        // no están probando estas validaciones inter-servicio.
+        lenient().when(userClient.existeUsuario(anyInt())).thenReturn(true);
+        lenient().when(menuClient.existeProducto(anyInt())).thenReturn(true);
+    }
 
     @Test
     void crearPedidoSinCupon_debeCalcularTotalYGuardarPedido() {
@@ -196,6 +213,28 @@ class PedidoServiceTest {
 
         verify(pedidoRepository, times(1)).findById(1);
         verify(pedidoRepository, times(1)).delete(pedido);
+    }
+
+    @Test
+    void crearPedido_debeRechazarSiElUsuarioNoExiste() {
+
+        PedidoRequestDTO dto = crearPedidoRequestSinCupon();
+        when(userClient.existeUsuario(dto.getUsuarioId())).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> pedidoService.crearPedido(dto));
+
+        verify(pedidoRepository, never()).save(any());
+    }
+
+    @Test
+    void crearPedido_debeRechazarSiUnProductoNoExiste() {
+
+        PedidoRequestDTO dto = crearPedidoRequestSinCupon();
+        when(menuClient.existeProducto(anyInt())).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> pedidoService.crearPedido(dto));
+
+        verify(pedidoRepository, never()).save(any());
     }
 
     private PedidoRequestDTO crearPedidoRequestSinCupon() {
