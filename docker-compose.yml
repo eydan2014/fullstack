@@ -1,162 +1,24 @@
 services:
 
-  mysql-pedidos:
-    image: mysql:8
-    container_name: mysql-pedidos
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: pedidos_coffee
       MYSQL_USER: appuser
       MYSQL_PASSWORD: 1234
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
-      - mysql_pedidos_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-cocina:
-    image: mysql:8
-    container_name: mysql-cocina
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cocina_coffee
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3308:3306"
-    volumes:
-      - mysql_cocina_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-cupones:
-    image: mysql:8
-    container_name: mysql-cupones
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cupones_coffee
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3309:3306"
-    volumes:
-      - mysql_cupones_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-user:
-    image: mysql:8
-    container_name: mysql-user
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ms-usuario
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3310:3306"
-    volumes:
-      - mysql_user_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-menu:
-    image: mysql:8
-    container_name: mysql-menu
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_menu
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3311:3306"
-    volumes:
-      - mysql_menu_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-pago:
-    image: mysql:8
-    container_name: mysql-pago
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_pagos
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3312:3306"
-    volumes:
-      - mysql_pago_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-fidelidad:
-    image: mysql:8
-    container_name: mysql-fidelidad
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_fidelidad
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3313:3306"
-    volumes:
-      - mysql_fidelidad_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-inventario:
-    image: mysql:8
-    container_name: mysql-inventario
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_inventario
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3314:3306"
-    volumes:
-      - mysql_inventario_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-resena:
-    image: mysql:8
-    container_name: mysql-resena
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_resena
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3315:3306"
-    volumes:
-      - mysql_resena_data:/var/lib/mysql
-    networks:
-      - backend-network
-
-  mysql-aviso:
-    image: mysql:8
-    container_name: mysql-aviso
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_aviso
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3316:3306"
-    volumes:
-      - mysql_aviso_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    mem_limit: 700m
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - backend-network
 
@@ -166,6 +28,7 @@ services:
     restart: unless-stopped
     ports:
       - "8761:8761"
+    mem_limit: 384m
     networks:
       - backend-network
 
@@ -176,16 +39,23 @@ services:
     ports:
       - "8081:8081"
     environment:
-      DB_HOST: mysql-pedidos
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: pedidos_coffee
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-pedidos
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+      user:
+        condition: service_started
+      menu:
+        condition: service_started
     networks:
       - backend-network
 
@@ -196,17 +66,21 @@ services:
     ports:
       - "8085:8085"
     environment:
-      DB_HOST: mysql-cocina
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: cocina_coffee
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-cocina
-      - ms-eureka
-      - ms-pedidos
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+      ms-pedidos:
+        condition: service_started
     networks:
       - backend-network
 
@@ -217,16 +91,19 @@ services:
     ports:
       - "8089:8089"
     environment:
-      DB_HOST: mysql-cupones
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: cupones_coffee
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-cupones
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
     networks:
       - backend-network
 
@@ -237,16 +114,19 @@ services:
     ports:
       - "8082:8082"
     environment:
-      DB_HOST: mysql-user
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: ms-usuario
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-user
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
     networks:
       - backend-network
 
@@ -257,16 +137,19 @@ services:
     ports:
       - "8083:8083"
     environment:
-      DB_HOST: mysql-menu
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: db_menu
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-menu
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
     networks:
       - backend-network
 
@@ -277,16 +160,27 @@ services:
     ports:
       - "8084:8084"
     environment:
-      DB_HOST: mysql-pago
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: db_pagos
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-pago
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+      menu:
+        condition: service_started
+      fidelidad:
+        condition: service_started
+      aviso:
+        condition: service_started
+      ms-pedidos:
+        condition: service_started
     networks:
       - backend-network
 
@@ -297,16 +191,21 @@ services:
     ports:
       - "8087:8087"
     environment:
-      DB_HOST: mysql-fidelidad
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: db_fidelidad
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-fidelidad
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+      user:
+        condition: service_started
     networks:
       - backend-network
 
@@ -317,16 +216,19 @@ services:
     ports:
       - "8086:8086"
     environment:
-      DB_HOST: mysql-inventario
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: db_inventario
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-inventario
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
     networks:
       - backend-network
 
@@ -337,17 +239,23 @@ services:
     ports:
       - "8090:8090"
     environment:
-      DB_HOST: mysql-resena
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: db_resena
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-resena
-      - ms-eureka
-      - menu
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+      user:
+        condition: service_started
+      menu:
+        condition: service_started
     networks:
       - backend-network
 
@@ -358,16 +266,21 @@ services:
     ports:
       - "8088:8088"
     environment:
-      DB_HOST: mysql-aviso
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: db_aviso
       DB_USER: appuser
       DB_PASSWORD: 1234
       JWT_SECRET: mysecreto98765432112345698778912
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 384m
     depends_on:
-      - mysql-aviso
-      - ms-eureka
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+      user:
+        condition: service_started
     networks:
       - backend-network
 
@@ -379,6 +292,7 @@ services:
       - "8080:8080"
     environment:
       EUREKA_URL: http://ms-eureka:8761/eureka/
+    mem_limit: 448m
     depends_on:
       - ms-eureka
       - ms-pedidos
@@ -395,16 +309,7 @@ services:
       - backend-network
 
 volumes:
-  mysql_pedidos_data:
-  mysql_cocina_data:
-  mysql_cupones_data:
-  mysql_user_data:
-  mysql_menu_data:
-  mysql_pago_data:
-  mysql_fidelidad_data:
-  mysql_inventario_data:
-  mysql_resena_data:
-  mysql_aviso_data:
+  mysql_data:
 
 networks:
   backend-network:
