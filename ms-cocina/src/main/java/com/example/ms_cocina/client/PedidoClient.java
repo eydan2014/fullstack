@@ -18,7 +18,10 @@ public class PedidoClient {
 
     private final WebClient webClient;
 
-    private static final String PEDIDOS_URL = "http://localhost:8081/api/pedidos/";
+    // 🔗 Nombre lógico registrado en Eureka (spring.application.name de ms-pedidos).
+    // El WebClient está construido desde un Builder @LoadBalanced, así que resuelve
+    // este nombre automáticamente a la instancia real (funciona igual en local y en Docker).
+    private static final String PEDIDOS_URL = "http://ms-pedidos/api/pedidos/";
 
     public boolean existePedido(Integer pedidoId) {
 
