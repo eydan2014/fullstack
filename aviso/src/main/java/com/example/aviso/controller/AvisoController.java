@@ -36,7 +36,7 @@ public class AvisoController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/enviar")
-    public ResponseEntity<ApiResponse<Void>> enviarAviso(@Valid @RequestBody AvisoRequestDTO req) {
+    public ResponseEntity<ApiResponse<Object>> enviarAviso(@Valid @RequestBody AvisoRequestDTO req) {
         log.info("[CONTROLLER] Petición entrante para enviar aviso. Usuario: {}, Tipo: {}", 
                  req.getUsuario(), req.getTipo());
         
@@ -45,7 +45,7 @@ public class AvisoController {
         log.info("[CONTROLLER] Proceso de notificación finalizado con éxito para el usuario: {}", req.getUsuario());
         
         return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
+                ApiResponse.<Object>builder()
                         .success(true)
                         .message("Aviso enviado exitosamente")
                         .build()

@@ -35,13 +35,13 @@ public class FidelidadController {
 
     @Operation(summary = "Acreditar puntos de compra", description = "Recibe el monto de una compra y calcula los puntos acumulados para el cliente.")
     @PostMapping("/acreditar")
-    public ResponseEntity<ApiResponse<Void>> acreditarPuntos(@Valid @RequestBody FidelidadRequestDTO req) {
+    public ResponseEntity<ApiResponse<Object>> acreditarPuntos(@Valid @RequestBody FidelidadRequestDTO req) {
         log.info("[Controler] Peticion remota para acreditar puntos. usuarios:{}, Monto de compra: ${}",
                 req.getUsuario(), req.getMonto());
         fidelidadService.agregarPuntos(req.getUsuario(), req.getMonto());
         log.info("[CONTROLLER] Proceso de acreditación finalizado con éxito para el usuario: {}", req.getUsuario());
         return ResponseEntity.ok( 
-                ApiResponse.<Void>builder()
+                ApiResponse.<Object>builder()
                         .success(true)
                         .message("Puntos acreditados exitosamente")
                         .build()

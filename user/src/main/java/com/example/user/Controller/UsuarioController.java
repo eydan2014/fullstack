@@ -61,7 +61,8 @@ public class UsuarioController {
                         .build()
         );
     }
-    @Operation(summary = "Iniciar sesión", description = "Valida las credenciales de acceso y retorna un accessToken firmado junto a un refreshToken.")
+    @Operation(summary = "Iniciar sesión", description = 
+    "Valida las credenciales de acceso y retorna un accessToken firmado junto a un refreshToken.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Login exitoso"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Credenciales incorrectas o inválidas"),
@@ -82,7 +83,8 @@ public class UsuarioController {
         );
     }
 
-    @Operation(summary = "Iniciar sesión", description = "Recibe un Refresh Token criptográfico válido y genera un nuevo Access Token sin requerir credenciales básicas.") //
+    @Operation(summary = "Iniciar sesión", description =
+    "Recibe un Refresh Token criptográfico válido y genera un nuevo Access Token sin requerir credenciales básicas.") //
         @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Token renovado exitosamente"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Refresh token expirado, inválido o no registrado"),
@@ -104,10 +106,18 @@ public class UsuarioController {
                         .build()
         );
     }
-    @Operation(summary = "Verificar si un usuario existe", description = "Endpoint interno usado por otros microservicios (aviso, fidelidad, resena) para validar que el username referenciado existe antes de crear un registro asociado.")
+    @Operation(summary = "Verificar si un usuario existe", description = 
+    "Endpoint interno usado por otros microservicios (aviso, fidelidad, resena) para validar que el username referenciado existe antes de crear un registro asociado.")
     @GetMapping("/{username}/existe")
     public boolean existeUsuario(@PathVariable String username) {
         log.info("[INTER-SERVICIO] Recibida validación remota de existencia para el usuario: {}", username);
         return service.existeUsuario(username);
-} 
+}
+
+    @Operation(summary = "Verificar si un usuario existe por ID", description = "Endpoint interno usado por ms-pedidos, que referencia al usuario mediante su ID numérico (usuarioId).")
+    @GetMapping("/id/{id}/existe")
+    public boolean existeUsuarioPorId(@PathVariable Long id) {
+        log.info("[INTER-SERVICIO] Recibida validación remota de existencia para el usuario ID: {}", id);
+        return service.existeUsuarioPorId(id);
+    }
 }

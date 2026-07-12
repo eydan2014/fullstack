@@ -19,6 +19,11 @@ public class pago {
     @Column(name = "producto_id")
     private Long productoId;
 
+    // 🔗 FK opcional hacia PEDIDOS (ms-pedidos). Nullable: el flujo histórico
+    // de "pago directo" de un solo producto sigue funcionando sin pedidoId.
+    @Column(name = "pedido_id")
+    private Integer pedidoId;
+
     private Integer cantidad;
 
     @Column(name = "monto_total")
