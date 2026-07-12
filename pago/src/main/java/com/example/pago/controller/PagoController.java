@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,33 +47,39 @@ public class PagoController {
         String usuarioReal = jwtUtil.obtenerUsuario(token.replace("Bearer ", ""));    
         log.info("[TRAZABILIDAD] Solicitud de pago recibida de Usuario: {} para Producto ID: {}",
                  usuarioReal, req.getProductoId()); 
-        //productos
-        String urlProducto = "http://localhost:8083/api/productos/" + req.getProductoId() + "/precio";
+        //menu
+        String urlProducto = "http://menu/api/productos/" + req.getProductoId() + "/precio";
         log.info("[INTER-SERVICIO] Consultando precio remoto al microservicio de Productos mediante RestTemplate...");  
         BigDecimal precioReal = restTemplate.getForObject(urlProducto, BigDecimal.class);
 
         pago nuevoPago = pagoService.procesopagar(req, usuarioReal, precioReal);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", token);
+        HttpEntity<Map<String, Object>> requestConToken;
+
         // FIDELIDAD
-        String urlFidelidad = "http://localhost:8087/fidelidad/acreditar";
+        String urlFidelidad = "http://fidelidad/fidelidad/acreditar";
         Map<String, Object> fidelidadRequest = new HashMap<>();
         fidelidadRequest.put("usuario", usuarioReal);
         fidelidadRequest.put("monto", precioReal);
         try {
-            restTemplate.postForEntity(urlFidelidad, fidelidadRequest, Void.class);
+            requestConToken = new HttpEntity<>(fidelidadRequest, headers);
+            restTemplate.postForEntity(urlFidelidad, requestConToken, Void.class);
             log.info("[INTER-SERVICIO] Notificación de puntos enviada exitosamente al microservicio de Fidelidad.");
         } catch (Exception e) {
             log.error("[INTER-SERVICIO] Error al notificar al microservicio de Fidelidad: {}", e.getMessage());
         }
 
         // AVISO 
-        String urlAviso = "http://localhost:8088/api/avisos/enviar";
+        String urlAviso = "http://aviso/api/avisos/enviar";
         Map<String, Object> avisoRequest = new HashMap<>();
         avisoRequest.put("usuario", usuarioReal);
         avisoRequest.put("mensaje", "Compra exitosa del producto ID: " + req.getProductoId() + " por un total de $" + nuevoPago.getMontoTotal());
         avisoRequest.put("tipo", "PAGO");
         try {
-            restTemplate.postForEntity(urlAviso, avisoRequest, Void.class);
+            requestConToken = new HttpEntity<>(avisoRequest, headers);
+            restTemplate.postForEntity(urlAviso, requestConToken, Void.class);
             log.info("[INTER-SERVICIO] Notificación enviada exitosamente al microservicio de Avisos.");
         } catch (Exception e) {
             log.error("[INTER-SERVICIO] Error al notificar al microservicio de Avisos: {}", e.getMessage());

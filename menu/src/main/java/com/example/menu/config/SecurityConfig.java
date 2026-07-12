@@ -43,6 +43,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/productos/*/precio").permitAll()
                 // 🔓 Permitimos verificar existencia de producto para que el módulo de Reseñas no rebote
                 .requestMatchers("/api/productos/*/existe").permitAll()
+                // 🔓 Documentación Swagger/OpenAPI accesible sin token
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 // 🔐 El resto de la API requiere token
                 .anyRequest().authenticated()
             )

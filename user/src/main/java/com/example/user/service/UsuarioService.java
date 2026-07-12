@@ -99,4 +99,11 @@ public class UsuarioService {
         log.info("[INTER-SERVICIO] Validando existencia remota del usuario: {}", username);
         return usuarioRepo.existsByUsername(username);
     }
+
+    // 🔗 INTER-SERVICIO: usado por ms-pedidos, que referencia al usuario
+    // mediante su ID numérico (usuarioId) en vez del username.
+    public boolean existeUsuarioPorId(Long id) {
+        log.info("[INTER-SERVICIO] Validando existencia remota del usuario por ID: {}", id);
+        return usuarioRepo.existsById(id);
+    }
 }

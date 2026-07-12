@@ -2,6 +2,7 @@ package com.example.pago.ServiceTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.pago.client.PedidoClient;
 import com.example.pago.dto.PagoRequest;
 import com.example.pago.model.pago;
 import com.example.pago.repository.PagoRepository;
@@ -24,6 +26,9 @@ public class PagoServiceTest {
 
     @Mock
     private PagoRepository pagoRepo;
+
+    @Mock
+    private PedidoClient pedidoClient;
 
     @InjectMocks
     private PagoService service;
@@ -64,5 +69,39 @@ public class PagoServiceTest {
 
        
         verify(pagoRepo).save(any(pago.class));
+    }
+
+    @Test
+    void deberiaProcesarPagoConPedidoValido() {
+        PagoRequest request = new PagoRequest();
+        request.setProductoId(10L);
+        request.setCantidad(1);
+        request.setMetodoPago("WEBPAY");
+        request.setPedidoId(55);
+
+        when(pedidoClient.existePedido(55)).thenReturn(true);
+        when(pagoRepo.save(any(pago.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        pago resultado = service.procesopagar(request, "user-123", new BigDecimal("2500"));
+
+        assertNotNull(resultado);
+        assertEquals(55, resultado.getPedidoId());
+        verify(pedidoClient).existePedido(55);
+    }
+
+    @Test
+    void deberiaRechazarPagoSiElPedidoNoExiste() {
+        PagoRequest request = new PagoRequest();
+        request.setProductoId(10L);
+        request.setCantidad(1);
+        request.setMetodoPago("WEBPAY");
+        request.setPedidoId(999);
+
+        when(pedidoClient.existePedido(999)).thenReturn(false);
+
+        assertThrows(RuntimeException.class,
+                () -> service.procesopagar(request, "user-123", new BigDecimal("2500")));
+
+        verify(pagoRepo, org.mockito.Mockito.never()).save(any());
     }
 }
