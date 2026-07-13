@@ -17,7 +17,7 @@ El objetivo principal es aplicar una arquitectura distribuida donde cada microse
 
 ## Arquitectura general
 
-El sistema está compuesto por **10 microservicios de negocio** más el **Gateway** y el **Servidor de descubrimiento (Eureka)**:
+El sistema está compuesto por **10 microservicios de negocio** más el **Gateway** y el **Eureka**:
 
 | Servicio | Puerto | Base de datos | Descripción |
 |---|---|---|---|
@@ -42,7 +42,7 @@ Todos los servicios comparten un mismo motor MySQL (contenedor `mysql`), con **u
 
 - Java 17 / Spring Boot
 - Spring Web / Spring Data JPA
-- Spring Validation (Bean Validation JSR 380)
+- Spring Validation 
 - Spring Cloud Gateway
 - Spring Cloud Netflix Eureka
 - Spring Security + JWT (en los servicios que lo requieren)
@@ -350,7 +350,7 @@ Funcionalidades implementadas:
 - Arquitectura de 10 microservicios de negocio + Gateway + Eureka.
 - Patrón CSR (Controller–Service–Repository) en todos los servicios.
 - Persistencia con JPA/Hibernate + MySQL, migraciones con Flyway.
-- Validaciones con Bean Validation (JSR 380).
+- Validaciones con Bean Validation.
 - Manejo centralizado de excepciones (`@ControllerAdvice`).
 - Comunicación entre microservicios vía REST (WebClient/RestTemplate) balanceada con Eureka.
 - Documentación Swagger/OpenAPI por servicio, agregada a través del Gateway.
