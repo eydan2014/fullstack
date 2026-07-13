@@ -2,7 +2,7 @@
 
 ## Descripción del proyecto
 
-Este proyecto corresponde a una arquitectura basada en microservicios desarrollada con Spring Boot, para la evaluación **EFT — DSY1103 Desarrollo FullStack 1**. El sistema simula la gestión integral de una cafetería: gestión de usuarios, menú, pedidos, cocina, pagos, cupones de descuento, fidelización de clientes, inventario, reseñas y avisos. Toda la arquitectura está centralizada mediante un **API Gateway** y un **Eureka Server** para el descubrimiento de servicios.
+Este proyecto corresponde a una arquitectura basada en microservicios desarrollada con Spring Boot. El sistema simula la gestión integral de una cafetería: gestión de usuarios, menú, pedidos, cocina, pagos, cupones de descuento, fidelización de clientes, inventario, reseñas y avisos. Toda la arquitectura está centralizada mediante un **API Gateway** y un **Eureka Server** para el descubrimiento de servicios.
 
 El objetivo principal es aplicar una arquitectura distribuida donde cada microservicio tenga responsabilidades separadas (patrón CSR), comunicación REST entre servicios, documentación Swagger/OpenAPI, persistencia real con JPA + Hibernate, validaciones, manejo centralizado de errores, pruebas unitarias, contenedores Docker y despliegue mediante Docker Compose.
 
