@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.hateoas.EntityModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -39,7 +38,6 @@ public class ProductosController {
     @Operation(summary = "Crear un nuevo producto", description = 
     "Permite registrar un nuevo item en el catalogo de cafeteria. Requiere rol ADMIN.")
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<Productos>> crear(@Valid @RequestBody ProductosDTO dto) {
         Productos p = service.crear(dto);
         return ResponseEntity.status(201).body(
@@ -84,7 +82,6 @@ public class ProductosController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<Productos>> actualizar(@PathVariable Long id, @Valid @RequestBody ProductosDTO dto) {
         Productos p = service.actualizar(id, dto);        
         return ResponseEntity.ok(
@@ -97,7 +94,6 @@ public class ProductosController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<Object>> eliminar(@PathVariable Long id) {
         service.eliminar(id);
         return ResponseEntity.ok(

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class OpenApiConfig {
@@ -20,7 +21,8 @@ public class OpenApiConfig {
                         .title("API de Fidelidad") //
                         .version("1.0") //
                         .description("Documentación del microservicio para la acumulación y gestión de puntos por compras de café.")) //
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName)) //
+                        .addServersItem(new Server().url("http://localhost:8080")) 
+                        .addSecurityItem(new SecurityRequirement().addList(securitySchemeName)) //
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
                                 new SecurityScheme()            

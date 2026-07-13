@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 import com.example.pago.controller.PagoController;
 import com.example.pago.dto.PagoRequest;
 import com.example.pago.model.pago;
-import com.example.pago.security.JwtUtil;
 import com.example.pago.service.PagoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,14 +39,10 @@ public class PagoControllerTest {
     @Mock
     private RestTemplate restTemplate;
 
-    @Mock
-    private JwtUtil jwtUtil;
-
     @InjectMocks
     private PagoController pagoController;
 
     private final String tokenSimulado = "Bearer token.súper.secreto";
-    private final String tokenLimpio = "token.súper.secreto";
 
     @BeforeEach
     void setUp() {
@@ -59,6 +54,7 @@ public class PagoControllerTest {
     void debeRealizarPagoExitosamente() throws Exception {
         // 1. GIVEN (Datos de entrada)
         PagoRequest req = new PagoRequest();
+        req.setUsuario("user-test");
         req.setProductoId(5L);
         req.setCantidad(2);
         req.setMetodoPago("TARJETA");
@@ -71,8 +67,6 @@ public class PagoControllerTest {
         pagoCreado.setMontoTotal(new BigDecimal("5000"));
 
         // Comportamientos de los mocks
-        when(jwtUtil.obtenerUsuario(tokenLimpio)).thenReturn("user-test");
-        
         String urlProducto = "http://localhost:8083/api/productos/5/precio";
         when(restTemplate.getForObject(urlProducto, BigDecimal.class)).thenReturn(new BigDecimal("2500"));
         
@@ -97,7 +91,6 @@ public class PagoControllerTest {
                 .andExpect(jsonPath("$.data.montoTotal").value(5000));
 
         // Verificaciones de interacciones
-        verify(jwtUtil).obtenerUsuario(tokenLimpio);
         verify(restTemplate).getForObject(urlProducto, BigDecimal.class);
         verify(pagoService).procesopagar(any(PagoRequest.class), eq("user-test"), any(BigDecimal.class));
         verify(restTemplate).postForEntity(eq(urlFidelidad), any(Map.class), eq(Void.class));
@@ -107,13 +100,13 @@ public class PagoControllerTest {
     void debeRealizarPagoAunSiFallaFidelidad() throws Exception {
         // 1. GIVEN
         PagoRequest req = new PagoRequest();
+        req.setUsuario("user-test");
         req.setProductoId(5L);
         req.setCantidad(1);
 
         pago pagoCreado = new pago();
         pagoCreado.setId(2L);
 
-        when(jwtUtil.obtenerUsuario(tokenLimpio)).thenReturn("user-test");
         when(restTemplate.getForObject(any(String.class), eq(BigDecimal.class))).thenReturn(new BigDecimal("1000"));
         when(pagoService.procesopagar(any(PagoRequest.class), any(String.class), any(BigDecimal.class))).thenReturn(pagoCreado);
         

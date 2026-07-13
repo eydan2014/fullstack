@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class OpenApiConfig { //
@@ -15,6 +16,7 @@ public class OpenApiConfig { //
                 .info(new Info()
                         .title("API de Autenticación (User)") 
                         .version("1.0") //
-                        .description("Documentación del microservicio de registro, login y gestión de usuarios de la cafetería.")); //
+                        .description("Documentación del microservicio de registro, login y gestión de usuarios de la cafetería.")) //
+                .addServersItem(new Server().url("http://localhost:8080")); //
     }
 }

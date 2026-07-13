@@ -2,7 +2,6 @@ package com.example.menu.Controller;
 
 import com.example.menu.dto.ProductosDTO;
 import com.example.menu.model.Productos;
-import com.example.menu.security.JwtUtil;
 import com.example.menu.service.ProductosService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,9 +39,6 @@ public class ProductosControllerTest {
 
     @MockitoBean // ◄ Mock del servicio inyectado de forma segura en la arquitectura del contexto
     private ProductosService service;
-
-    @MockitoBean 
-    private JwtUtil jwtUtil;
 
     @Test
     void debeListarProductos() throws Exception {

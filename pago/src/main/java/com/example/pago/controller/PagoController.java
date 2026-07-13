@@ -8,14 +8,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.pago.dto.PagoRequest;
 import com.example.pago.dto.ApiResponse; 
 import com.example.pago.model.pago;
-import com.example.pago.security.JwtUtil;
 import com.example.pago.service.PagoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,15 +34,16 @@ public class PagoController {
 
     private final PagoService pagoService;
     private final RestTemplate restTemplate; 
-    private final JwtUtil jwtUtil;
 
     @Operation(summary = "Procesar un nuevo pago", description = "Valida el precio remoto del producto, ejecuta la transacción, y notifica a fidelidad y avisos.")
     @PostMapping("/realizar_pago")
     public ResponseEntity<ApiResponse<pago>> pagar(
         @RequestBody PagoRequest req, 
-        @RequestHeader("Authorization") String token
+        @RequestHeader(value = "Authorization", required = false) String token
     ) {
-        String usuarioReal = jwtUtil.obtenerUsuario(token.replace("Bearer ", ""));    
+        // 🔓 Sin JwtUtil: el usuario viene directo en el body de la petición
+        // (antes se extraía decodificando el token JWT).
+        String usuarioReal = req.getUsuario();
         log.info("[TRAZABILIDAD] Solicitud de pago recibida de Usuario: {} para Producto ID: {}",
                  usuarioReal, req.getProductoId()); 
         //menu
@@ -55,7 +54,9 @@ public class PagoController {
         pago nuevoPago = pagoService.procesopagar(req, usuarioReal, precioReal);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        if (token != null) {
+            headers.set("Authorization", token);
+        }
         HttpEntity<Map<String, Object>> requestConToken;
 
         // FIDELIDAD
@@ -100,10 +101,9 @@ public class PagoController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "No autorizado para acceder a este recurso")
         })
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<ApiResponse<EntityModel<pago>>> obtener(
             @PathVariable Long id,
-            @RequestHeader("Authorization") String token
+            @RequestHeader(value = "Authorization", required = false) String token
     ) {
         log.info("[CONTROLLER] Solicitando comprobante de pago para ID: {}", id);
         

@@ -6,3 +6,4 @@ CREATE TABLE IF NOT EXISTS resenas (
     comentario VARCHAR(500),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+insert into resenas (id_producto, usuario, calificacion, comentario) values (1, 'usuario1', 5, 'Excelente producto');

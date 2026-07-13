@@ -36,8 +36,7 @@ public class UsuarioService {
         user.setUsername(req.getUsername());
         user.setPassword(encoder.encode(req.getPassword()));
         
-        // 🚀 REGLA DE ORO: Guardamos solo "USER" (Limpio). 
-        // De esta manera evitamos que se duplique como 'ROLE_ROLE_USER' cuando el JwtUtil genere el token.
+      
         user.setRol("USER"); 
 
         usuarioRepo.save(user);

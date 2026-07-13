@@ -3,7 +3,10 @@ package com.example.pago.dto;
 import lombok.Data;
 @Data
 public class PagoRequest {
-    
+
+    // 🔓 Sin JwtUtil: el usuario que realiza el pago viene explícito en el body
+    // (antes se extraía del token JWT).
+    private String usuario;
 
     private Long productoId;
     private Integer cantidad;

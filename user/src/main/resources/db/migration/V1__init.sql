@@ -26,3 +26,6 @@ INSERT INTO usuario (username, password, role) VALUES
     '$2a$10$Dow1s7x1uJk7kP8Gk9kF9e9Zz9mZ3z7fZ9yZQzQ9xZQzQ9xZQzQ9',
     'USER'  -- 
 );
+
+insert into usuario (username, password, role) values ('usuario1',
+ '$2a$10$Dow1s7x1uJk7kP8Gk9kF9e9Zz9mZ3z7fZ9yZQzQ9xZQzQ9xZQzQ9', 'USER');

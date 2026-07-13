@@ -5,6 +5,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +22,7 @@ public class OpenApiConfig {
                         .description("API interactiva para el control de stock, insumos y auditoría de bodega."))
                 
                 .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
+                .addServersItem(new Server().url("http://localhost:8080")) 
                 .components(new Components()
                         .addSecuritySchemes("BearerAuth",
                                 new SecurityScheme()

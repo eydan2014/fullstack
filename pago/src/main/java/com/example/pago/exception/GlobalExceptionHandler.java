@@ -9,7 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.security.access.AccessDeniedException; 
 
 import com.example.pago.dto.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,28 +28,6 @@ public class GlobalExceptionHandler {
                         .success(false)
                         .message("Validación fallida")
                         .error(errores)
-                        .build()
-        );
-    }
-
-    // 🔐 403 - ACCESO DENEGADO
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Object>> handle403(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                ApiResponse.<Object>builder()
-                        .success(false)
-                        .message("Acceso denegado")
-                        .build()
-        );
-    }
-
-    // 🔎 401 - CREDENCIALES
-    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBadCredentials(org.springframework.security.authentication.BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ApiResponse.<Object>builder()
-                        .success(false)
-                        .message("Credenciales inválidas")
                         .build()
         );
     }
